@@ -30,13 +30,18 @@ const storage = multer.diskStorage({
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    const timestamp = Date.now();
+    const originalname = file.originalname;
+    const extension = path.extname(originalname);
+    const newFilename = `${timestamp}_${originalname}`;
+    console.log(newFilename);
+    cb(null, newFilename);
   },
 });
 
 const upload = multer({ storage });
 
-app.post("/upload_image", upload.single("images"), (rqe, res) => {
+app.post("/upload_image", upload.array("images", 3), (rqe, res) => {
   res.send("File uploaded!");
 });
 
