@@ -64,7 +64,7 @@ const Post = new Schema(
     media: [Media],
     likes: [{ type: mongoose.Schema.Types.ObjectId }],
     comments: [CommentArr],
-    topics: [{ type: mongoose.Schema.Types.ObjectId, ref: "Topic" }],
+    topics: { type: mongoose.Schema.Types.ObjectId, ref: "Topic" },
   },
   {
     timestamps: true,
