@@ -98,7 +98,7 @@ const upload = multer({ storage });
 app.post("/post", (req, res) => {
   console.log(req.body);
   console.log(req.files);
-  upload.array("media", 3)(req, res, async (err) => {
+  upload.array("media", 10)(req, res, async (err) => {
     const media = req.files.map((file) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
