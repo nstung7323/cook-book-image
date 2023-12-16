@@ -96,6 +96,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.post("/post", (req, res) => {
+  console.log("oke");
   upload.array("media", 3)(req, res, async (err) => {
     const media = req.files.map((file) => {
       const link = "/upload/" + file.filename;
