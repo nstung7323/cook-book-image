@@ -119,6 +119,40 @@ app.post("/post", (req, res) => {
   });
 });
 
+const ingredientSchema = new Schema({
+    name: { type: String },
+    img_url: { type: String },
+    quantity: { type: Number },
+});
+
+const reviewSchema = new Schema({
+    star: { type: String },
+    _id_user: { type: Schema.Types.ObjectId },
+    comment: { type: String },
+});
+
+const stepSchema = new Schema({
+    id: { type: Number },
+    making: { type: String },
+});
+const Recipes = new Schema({
+    _id_user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    name_food: { type: String },
+    img_url: { type: String },
+    video_url: { type: String },
+    ingredient: [ingredientSchema],
+    steps:[stepSchema],
+    evaluate: [reviewSchema],
+    topics: { type: mongoose.Schema.Types.ObjectId, ref: 'topic' },
+}, {
+    timestamps: true,
+});
+
+const recipes = mongoose.model("recipes", Recipes);
+
 app.post("/recipes", (req, res) => {
   upload.array("media", 10)(req, res, async (err) => {
     const ingredient = req.files.forEach((file, index) => {
@@ -127,16 +161,16 @@ app.post("/recipes", (req, res) => {
       return {
         name: req.body[`name${index}`],
         quality: req.body[`quality${index}`],
-        url,
+        img_url: url,
       };
     });
     
     let steps = [];
     let index = 0;
-    while(req.body[`step${index}`] !== undefined || index == req.body.length) {
+    while(req.body[`step${index}`] !== undefined || index < req.body.length) {
       const step = {
-        id: index + 1,
-        making: req.body[`making[index]`]
+        id: req.body[`step${index}`],
+        making: req.body[`making${index}`]
       }
       steps.push(step);
       index++;
@@ -148,11 +182,12 @@ app.post("/recipes", (req, res) => {
       img_url: req.body.img_url,
       video_url: req.body.video_url,
       ingredient,
+      steps,
       topics: req.body.topics,
     };
 
-    await new post(data).save();
-    res.status(200).send({ message: 'Thêm bài viết thành công' });
+    await new recipes(data).save();
+    res.status(200).send({ message: 'Thêm công thức thành công' });
   });
 });
 
