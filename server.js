@@ -88,6 +88,7 @@ const reviewSchema = new Schema({
 const stepSchema = new Schema({
     id: { type: Number },
     making: { type: String },
+    img_url: { type: String }
 });
 const Recipes = new Schema({
     _id_user: {
