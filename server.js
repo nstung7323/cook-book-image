@@ -167,13 +167,17 @@ app.post("/recipes", (req, res) => {
     
     let steps = [];
     let index = 1;
-    while(req.body[`step${index}`] !== undefined && index < req.body.length) {
-      const step = {
+    let tmp = 0;
+    while(tmp < Object.keys(req.body).length) {
+      tmp++;
+      if (Object.keys(req.body).includes(`step${index}`)) {
+        const step = {
         id: req.body[`step${index}`],
         making: req.body[`making${index}`]
-      }
+        }
       steps.push(step);
       index++;
+      }
     }
     
     const data = {
