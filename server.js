@@ -122,7 +122,7 @@ app.post("/post", (req, res) => {
 const ingredientSchema = new Schema({
     name: { type: String },
     img_url: { type: String },
-    quantity: { type: Number },
+    quatity: { type: Number },
 });
 
 const reviewSchema = new Schema({
@@ -143,7 +143,7 @@ const Recipes = new Schema({
     name_food: { type: String },
     img_url: { type: String },
     video_url: { type: String },
-    ingredient: [ingredientSchema],
+    ingredients: [ingredientSchema],
     steps:[stepSchema],
     evaluate: [reviewSchema],
     topics: { type: mongoose.Schema.Types.ObjectId, ref: 'topic' },
@@ -155,9 +155,10 @@ const recipes = mongoose.model("recipes", Recipes);
 
 app.post("/recipes", (req, res) => {
   upload.array("media", 10)(req, res, async (err) => {
-    const ingredient = req.files.forEach((file, index) => {
+    const ingredients = req.files.forEach((file, index) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
+      console.log(req.body[`name${index}`]);
       return {
         name: req.body[`name${index}`],
         quality: req.body[`quality${index}`],
@@ -166,8 +167,8 @@ app.post("/recipes", (req, res) => {
     });
     
     let steps = [];
-    let index = 0;
-    while(req.body[`step${index}`] !== undefined || index < req.body.length) {
+    let index = 1;
+    while(req.body[`step${index}`] !== undefined && index < req.body.length) {
       const step = {
         id: req.body[`step${index}`],
         making: req.body[`making${index}`]
@@ -181,7 +182,7 @@ app.post("/recipes", (req, res) => {
       name_food: req.body.name_food,
       img_url: req.body.img_url,
       video_url: req.body.video_url,
-      ingredient,
+      ingredients,
       steps,
       topics: req.body.topics,
     };
