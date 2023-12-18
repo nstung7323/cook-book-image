@@ -131,6 +131,17 @@ app.post("/recipes", (req, res) => {
       };
     });
     
+    let steps = [];
+    let index = 0;
+    while(req.body[`step${index}`] !== undefined || index == req.body.length) {
+      const step = {
+        id: index + 1,
+        making: req.body[`making[index]`]
+      }
+      steps.push(step);
+      index++;
+    }
+    
     const data = {
       _id_user: req.body._id_user,
       name_food: req.body.name_food,
