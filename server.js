@@ -73,7 +73,7 @@ const Post = new Schema(
 
 const post = mongoose.model("posts", Post);
 
-const storage = multer.diskStorage({
+const storagePost = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, "./public/upload");
 
@@ -93,11 +93,9 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({ storagePost });
 
 app.post("/post", (req, res) => {
-  console.log(req.body);
-  console.log(req.files);
   upload.array("media", 10)(req, res, async (err) => {
     const media = req.files.map((file) => {
       const link = "/upload/" + file.filename;
