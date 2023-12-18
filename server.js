@@ -155,10 +155,9 @@ const recipes = mongoose.model("recipes", Recipes);
 
 app.post("/recipes", (req, res) => {
   upload.array("media", 10)(req, res, async (err) => {
-    const ingredients = req.files.forEach((file, index) => {
+    const ingredients = req.files.map((file, index) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
-      console.log(req.body[`name${index}`]);
       return {
         name: req.body[`name${index}`],
         quality: req.body[`quality${index}`],
