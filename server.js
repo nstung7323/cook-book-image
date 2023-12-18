@@ -119,6 +119,19 @@ app.post("/post", (req, res) => {
   });
 });
 
+app.post("/recipes", (req, res) => {
+  upload.array("media", 10)(req, res, async (err) => {
+    const ingredient = req.files.forEach((file, index) => {
+      const link = "/upload/" + file.filename;
+      const url = API_URL + link;
+      return {
+        name: req.body[`name${index}`],
+        url,
+      };
+    });
+  });
+});
+
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
 );
