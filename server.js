@@ -134,6 +134,11 @@ const storage = multer.diskStorage({
   
 const upload = multer({ storage });
 
+const imgRecipesUploadMiddleware = upload.fields([
+  { name: "img_ingredients", maxCount: 10 },
+  { name: "img_making", maxCount: 10 },
+]);
+
 app.post("/post", (req, res) => {
   upload.array("media", 10)(req, res, async (err) => {
     const media = req.files.map((file) => {
@@ -159,31 +164,26 @@ app.post("/post", (req, res) => {
 });
 
 app.post("/recipes", (req, res) => {
-  upload.array("media", 10)(req, res, async (err) => {
-    const ingredients = req.files.map((file, index) => {
+  imgRecipesUploadMiddleware(req, res, async (err) => {
+    const ingredients = req.files.img_ingredients.map((file, index) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
       return {
         name: req.body[`name${index}`],
         quality: req.body[`quality${index}`],
         img_url: url,
-      };
-    });
-    
-    let steps = [];
-    let index = 1;
-    let tmp = 0;
-    while(tmp < Object.keys(req.body).length) {
-      tmp++;
-      if (Object.keys(req.body).includes(`step${index}`)) {
-        const step = {
-          id: req.body[`step${index}`],
-          making: req.body[`making${index}`]
-        }
-        steps.push(step);
-        index++;
       }
-    }
+    });
+                                                      
+    const steps = req.files.img_making.map((file, index) => {
+      const link = "/upload/" + file.filename;
+      const url = API_URL + link;
+      return {
+        id: req.body[`step${index}`],
+        making: req.body[`making${index}`],
+        img_url: url,
+      }
+    });
     
     const data = {
       _id_user: req.body._id_user,
