@@ -171,10 +171,10 @@ app.post("/post", (req, res) => {
       topics: req.body.topics,
     };
 
-    await new post(data).save();
+    const newPost = await new post(data).save();
     await user.findByIdAndUpdate(
-      req.body._id_user,
-      { $push: { recipes: newRecipe._id }}
+      req.body._id_author,
+      { $push: { posts: newPost._id }}
     );
     res.status(200).send({ message: 'Thêm bài viết thành công' });
   });
