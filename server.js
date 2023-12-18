@@ -126,9 +126,22 @@ app.post("/recipes", (req, res) => {
       const url = API_URL + link;
       return {
         name: req.body[`name${index}`],
+        quality: req.body[`quality${index}`],
         url,
       };
     });
+    
+    const data = {
+      _id_user: req.body._id_user,
+      name_food: req.body.name_food,
+      img_url: req.body.img_url,
+      video_url: req.body.video_url,
+      ingredient,
+      topics: req.body.topics,
+    };
+
+    await new post(data).save();
+    res.status(200).send({ message: 'Thêm bài viết thành công' });
   });
 });
 
