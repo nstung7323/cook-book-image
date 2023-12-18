@@ -97,8 +97,8 @@ const Recipes = new Schema({
     name_food: { type: String },
     img_url: { type: String },
     video_url: { type: String },
-    ingredients: [ingredientSchema],
-    steps:[stepSchema],
+    ingredient: [ingredientSchema],
+    step: [stepSchema],
     evaluate: [reviewSchema],
     topics: { type: mongoose.Schema.Types.ObjectId, ref: 'topic' },
 }, {
@@ -189,8 +189,8 @@ app.post("/recipes", (req, res) => {
       name_food: req.body.name_food,
       img_url: req.body.img_url,
       video_url: req.body.video_url,
-      ingredients,
-      steps,
+      ingredient: ingredients,
+      step: steps,
       topics: req.body.topics,
     };
 
