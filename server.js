@@ -38,6 +38,18 @@ try {
   console.log("connection failed: " + err.message);
 }
 
+const User = new Schema(
+  {
+    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "posts"}],
+    recipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "recipes"}]
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const user = mongoose.model("User", User);
+
 const likeArr = new Schema({
   _id_users: { type: Schema.Types.ObjectId, ref: "User" },
 });
@@ -160,6 +172,10 @@ app.post("/post", (req, res) => {
     };
 
     await new post(data).save();
+    await user.findByIdAndUpdate(
+      req.body._id_user,
+      { $push: { recipes: newRecipe._id }}
+    );
     res.status(200).send({ message: 'Thêm bài viết thành công' });
   });
 });
@@ -197,7 +213,11 @@ app.post("/recipes", (req, res) => {
       topics: req.body.topics,
     };
 
-    await new recipes(data).save();
+    const newRecipe = await new recipes(data).save();
+    await user.findByIdAndUpdate(
+      req.body._id_user,
+      { $push: { recipes: newRecipe._id }}
+    );
     res.status(200).send({ message: 'Thêm công thức thành công' });
   });
 });
