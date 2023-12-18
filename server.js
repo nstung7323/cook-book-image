@@ -73,6 +73,44 @@ const Post = new Schema(
 
 const post = mongoose.model("posts", Post);
 
+const ingredientSchema = new Schema({
+    name: { type: String },
+    img_url: { type: String },
+    quatity: { type: Number },
+});
+
+const reviewSchema = new Schema({
+    star: { type: String },
+    _id_user: { type: Schema.Types.ObjectId },
+    comment: { type: String },
+});
+
+const stepSchema = new Schema({
+    id: { type: Number },
+    making: { type: String },
+});
+const Recipes = new Schema({
+    _id_user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    name_food: { type: String },
+    img_url: { type: String },
+    video_url: { type: String },
+    ingredients: [ingredientSchema],
+    steps:[stepSchema],
+    evaluate: [reviewSchema],
+    topics: { type: mongoose.Schema.Types.ObjectId, ref: 'topic' },
+}, {
+    timestamps: true,
+});
+Recipes.plugin(mongooseDelete, {
+    overrideMethods: 'all',
+    deletedAt: true
+});
+
+const recipes = mongoose.model("recipes", Recipes);
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, "./public/upload");
@@ -119,40 +157,6 @@ app.post("/post", (req, res) => {
   });
 });
 
-const ingredientSchema = new Schema({
-    name: { type: String },
-    img_url: { type: String },
-    quatity: { type: Number },
-});
-
-const reviewSchema = new Schema({
-    star: { type: String },
-    _id_user: { type: Schema.Types.ObjectId },
-    comment: { type: String },
-});
-
-const stepSchema = new Schema({
-    id: { type: Number },
-    making: { type: String },
-});
-const Recipes = new Schema({
-    _id_user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    name_food: { type: String },
-    img_url: { type: String },
-    video_url: { type: String },
-    ingredients: [ingredientSchema],
-    steps:[stepSchema],
-    evaluate: [reviewSchema],
-    topics: { type: mongoose.Schema.Types.ObjectId, ref: 'topic' },
-}, {
-    timestamps: true,
-});
-
-const recipes = mongoose.model("recipes", Recipes);
-
 app.post("/recipes", (req, res) => {
   upload.array("media", 10)(req, res, async (err) => {
     const ingredients = req.files.map((file, index) => {
@@ -172,11 +176,11 @@ app.post("/recipes", (req, res) => {
       tmp++;
       if (Object.keys(req.body).includes(`step${index}`)) {
         const step = {
-        id: req.body[`step${index}`],
-        making: req.body[`making${index}`]
+          id: req.body[`step${index}`],
+          making: req.body[`making${index}`]
         }
-      steps.push(step);
-      index++;
+        steps.push(step);
+        index++;
       }
     }
     
