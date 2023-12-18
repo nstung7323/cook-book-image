@@ -76,7 +76,7 @@ const post = mongoose.model("posts", Post);
 const ingredientSchema = new Schema({
     name: { type: String },
     img_url: { type: String },
-    quatity: { type: Number },
+    quality: { type: String },
 });
 
 const reviewSchema = new Schema({
