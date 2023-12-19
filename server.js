@@ -150,6 +150,7 @@ const upload = multer({ storage });
 const imgRecipesUploadMiddleware = upload.fields([
   { name: "img_ingredients", maxCount: 10 },
   { name: "img_making", maxCount: 10 },
+  { name: "img_url", maxCount: 1 }
 ]);
 
 app.post("/post", (req, res) => {
@@ -204,6 +205,10 @@ app.post("/recipes", (req, res) => {
         img_url: url,
       }
     });
+    
+    const img_url = req.files.img_url.map((file, index) => {
+      
+    })
     
     const data = {
       _id_user: req.body._id_user,
