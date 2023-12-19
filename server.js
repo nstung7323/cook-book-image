@@ -181,10 +181,10 @@ app.post("/post", (req, res) => {
 });
 
 app.post("/recipes", (req, res) => {
-  console.log(req.body.name_food);
-  console.log(req.body.time);
-  console.log(req.body);
   imgRecipesUploadMiddleware(req, res, async (err) => {
+    console.log(req.body.name_food);
+    console.log(req.body.time);
+    console.log(req.body);
     const ingredients = req.files.img_ingredients.map((file, index) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
