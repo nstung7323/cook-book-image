@@ -181,6 +181,8 @@ app.post("/post", (req, res) => {
 });
 
 app.post("/recipes", (req, res) => {
+  console.log(req.body.name_food);
+  console.log(req.body.time);
   console.log(req.body);
 //   imgRecipesUploadMiddleware(req, res, async (err) => {
 //     const ingredients = req.files.img_ingredients.map((file, index) => {
