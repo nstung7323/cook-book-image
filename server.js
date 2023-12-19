@@ -150,7 +150,7 @@ const upload = multer({ storage });
 const imgRecipesUploadMiddleware = upload.fields([
   { name: "img_ingredients", maxCount: 10 },
   { name: "img_making", maxCount: 10 },
-  { name: "img_url", maxCount: 1 }
+  { name: "img", maxCount: 1 }
 ]);
 
 app.post("/post", (req, res) => {
@@ -183,9 +183,6 @@ app.post("/post", (req, res) => {
 
 app.post("/recipes", (req, res) => {
   imgRecipesUploadMiddleware(req, res, async (err) => {
-    console.log(req.body.name_food);
-    console.log(req.body.time);
-    console.log(req.body);
     const ingredients = req.files.img_ingredients.map((file, index) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
@@ -206,14 +203,18 @@ app.post("/recipes", (req, res) => {
       }
     });
     
-    const img_url = req.files.img_url.map((file, index) => {
-      
-    })
+    const img_url = req.files.img.map((file, index) => {
+      const link = "/upload/" + file.filename;
+      const url = API_URL + link;
+      return {
+        url
+      }
+    });
     
     const data = {
       _id_user: req.body._id_user,
       name_food: req.body.name_food,
-      img_url: req.body.img_url,
+      img_url: img_url[0].url,
       video_url: req.body.video_url,
       time: req.body.time,
       ingredient: ingredients,
