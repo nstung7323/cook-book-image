@@ -172,7 +172,7 @@ app.post("/post", (req, res) => {
       topics: req.body.topics,
     };
 
-    // const newPost = await new post(data).save();
+    const newPost = await new post(data).save();
     // await user.findByIdAndUpdate(
     //   req.body._id_author,
     //   { $push: { posts: newPost._id }}
@@ -222,7 +222,7 @@ app.post("/recipes", (req, res) => {
       topics: req.body.topics,
     };
 
-    // const newRecipe = await new recipes(data).save();
+    const newRecipe = await new recipes(data).save();
     // await user.findByIdAndUpdate(
     //   req.body._id_user,
     //   { $push: { recipes: newRecipe._id }}
