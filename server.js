@@ -157,8 +157,8 @@ const imgRecipesUploadMiddleware = upload.fields([
   { name: "img", maxCount: 1 }
 ]);
 
-app.put("/users/:email", upload.single('image'), async (req, res) => {
-  const User = await user.findOne({ req.params.email });
+app.put("/users/:email", upload.single('avatar'), async (req, res) => {
+  const User = await user.findOne({ email: req.params.email });
   if (!User) {
     return res.status(404).json({
       status: "error",
@@ -168,11 +168,22 @@ app.put("/users/:email", upload.single('image'), async (req, res) => {
     });
   }
   
-  const avatar = req.files.avatar
+  const link = "/upload/" + req.file.filename;
+  const url = API_URL + link;
   
   const data = {
-    
+    name: req.body.name,
+    phone: req.body.phone,
+    avatar: url,
   }
+  
+  await User.update({ _id: User._id }, { $set: data});
+  return res.status(200).json({
+    status: "success",
+    code: 200,
+    message: "Cập nhập thành công!",
+    data: [],
+  });
 });
 
 app.post("/post", (req, res) => {
