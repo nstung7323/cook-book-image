@@ -157,9 +157,9 @@ const imgRecipesUploadMiddleware = upload.fields([
   { name: "img", maxCount: 1 }
 ]);
 
-app.put("/users/", (req, res) => {
-  const user = user.findOne({ email: req.body.email });
-  if (!user) {
+app.put("/users/:email", upload.single('image'), async (req, res) => {
+  const User = await user.findOne({ req.params.email });
+  if (!User) {
     return res.status(404).json({
       status: "error",
       code: 404,
@@ -168,11 +168,11 @@ app.put("/users/", (req, res) => {
     });
   }
   
+  const avatar = req.files.avatar
+  
   const data = {
-    name: req.body.name,
-    phone: req.body.phone,
+    
   }
-  await user.findByIdAndUpdate(user._id, );
 });
 
 app.post("/post", (req, res) => {
