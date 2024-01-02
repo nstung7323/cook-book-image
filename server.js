@@ -40,6 +40,10 @@ try {
 
 const User = new Schema(
   {
+    name: { required: true, type: String },
+    email: { required: true, type: String },
+    phone: { required: true, type: Number },
+    avatar: { required: true, type: String },
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "posts"}],
     recipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "recipes"}]
   },
@@ -152,6 +156,24 @@ const imgRecipesUploadMiddleware = upload.fields([
   { name: "img_making", maxCount: 10 },
   { name: "img", maxCount: 1 }
 ]);
+
+app.put("/users/", (req, res) => {
+  const user = user.findOne({ email: req.body.email });
+  if (!user) {
+    return res.status(404).json({
+      status: "error",
+      code: 404,
+      message: "user not found",
+      data: null,
+    });
+  }
+  
+  const data = {
+    name: req.body.name,
+    phone: req.body.phone,
+  }
+  await user.findByIdAndUpdate(user._id, );
+});
 
 app.post("/post", (req, res) => {
   upload.array("media", 10)(req, res, async (err) => {
