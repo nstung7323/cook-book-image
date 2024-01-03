@@ -44,6 +44,7 @@ const User = new Schema(
     email: { required: true, type: String },
     phone: { required: true, type: Number },
     avatar: { required: true, type: String },
+    date: { required: true, type: String },
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "posts"}],
     recipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "recipes"}]
   },
@@ -174,6 +175,7 @@ app.put("/users/:id", upload.single('avatar'), async (req, res) => {
   const data = {
     name: req.body.name,
     phone: req.body.phone,
+    data: req.body.date,
     avatar: url,
   }
   
