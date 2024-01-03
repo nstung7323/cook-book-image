@@ -195,7 +195,7 @@ const imgAvatar = upload.fields([
 
 app.put("/users/:id", (req, res) => {
   imgAvatar(req, res, async (err) => {
-    console.log(req.body.name)
+    console.log(req.body)
   const User = await user.findOne({ _id: req.params.id });
   if (!User) {
     return res.status(404).json({
