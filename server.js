@@ -159,7 +159,7 @@ const imgRecipesUploadMiddleware = upload.fields([
 ]);
 
 const imgAvatar = upload.fields([
-  { name: "_avatar_user", maxCount: 10 },
+  { name: "_avatar_user", maxCount: 1 },
 ]);
 
 // app.put("/users/:id", upload.single('_avatar_user'), async (req, res) => {
@@ -192,7 +192,7 @@ const imgAvatar = upload.fields([
 //   });
 // });
 
-app.put("/users/:id", async (req, res) => {
+app.put("/users/:id", (req, res) => {
   imgAvatar(req, res, async (err) => {
   const User = await user.findOne({ _id: req.params.id });
   if (!User) {
