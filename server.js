@@ -175,7 +175,7 @@ app.put("/users/:id", upload.single('avatar'), async (req, res) => {
   const data = {
     name: req.body.name,
     phone: req.body.phone,
-    data: req.body.date,
+    date: req.body.date,
     avatar: url,
   }
   
