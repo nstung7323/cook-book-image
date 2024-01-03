@@ -159,13 +159,10 @@ const imgRecipesUploadMiddleware = upload.fields([
 ]);
 
 const imgAvatar = upload.fields([
-  {
-    name: "avatar",
-    maxCount: 1,
-  }
+  { name: "_avatar_user", maxCount: 10 },
 ]);
 
-// app.put("/users/:id", upload.single('avatar'), async (req, res) => {
+// app.put("/users/:id", upload.single('_avatar_user'), async (req, res) => {
 //   const User = await user.findOne({ _id: req.params.id });
 //   if (!User) {
 //     return res.status(404).json({
@@ -207,7 +204,7 @@ app.put("/users/:id", async (req, res) => {
     });
   }
   
-  const avatar = req.files.avatar.map((file, index) => {
+  const avatar = req.files._avatar_user.map((file, index) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
       return {
@@ -219,7 +216,7 @@ app.put("/users/:id", async (req, res) => {
     name: req.body.name,
     phone: req.body.phone,
     date: req.body.date,
-    avatar,
+    avatar: avatar[0].url,
   }
   
   await user.updateOne({ _id: req.params.id }, { $set: data});
