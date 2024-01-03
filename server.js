@@ -158,44 +158,7 @@ const imgRecipesUploadMiddleware = upload.fields([
   { name: "img", maxCount: 1 }
 ]);
 
-const imgAvatar = upload.fields([
-  { name: "_avatar_user", maxCount: 1 },
-]);
-
-// app.put("/users/:id", upload.single('_avatar_user'), async (req, res) => {
-//   console.log(req.body.name)
-//   const User = await user.findOne({ _id: req.params.id });
-//   if (!User) {
-//     return res.status(404).json({
-//       status: "error",
-//       code: 404,
-//       message: "user not found",
-//       data: null,
-//     });
-//   }
-  
-//   const link = "/upload/" + req.file.filename;
-//   const url = API_URL + link;
-  
-//   const data = {
-//     name: req.body.name,
-//     phone: req.body.phone,
-//     date: req.body.date,
-//     avatar: url,
-//   }
-  
-//   await user.updateOne({ _id: req.params.id }, { $set: data});
-//   return res.status(200).json({
-//     status: "success",
-//     code: 200,
-//     message: "Cập nhập thành công!",
-//     data: [],
-//   });
-// });
-
-app.put("/users/:id", (req, res) => {
-  imgAvatar(req, res, async (err) => {
-    console.log(req.body)
+app.put("/users/:id", upload.single('_avatar_user'), async (req, res) => {
   const User = await user.findOne({ _id: req.params.id });
   if (!User) {
     return res.status(404).json({
@@ -206,19 +169,14 @@ app.put("/users/:id", (req, res) => {
     });
   }
   
-  const avatar = req.files._avatar_user.map((file, index) => {
-      const link = "/upload/" + file.filename;
-      const url = API_URL + link;
-      return {
-        url
-      }
-    });
+  const link = "/upload/" + req.file.filename;
+  const url = API_URL + link;
   
   const data = {
     name: req.body.name,
     phone: req.body.phone,
     date: req.body.date,
-    avatar: avatar[0].url,
+    avatar: url,
   }
   
   await user.updateOne({ _id: req.params.id }, { $set: data});
@@ -227,7 +185,6 @@ app.put("/users/:id", (req, res) => {
     code: 200,
     message: "Cập nhập thành công!",
     data: [],
-  });
   });
 });
 
