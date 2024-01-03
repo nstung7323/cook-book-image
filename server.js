@@ -158,7 +158,45 @@ const imgRecipesUploadMiddleware = upload.fields([
   { name: "img", maxCount: 1 }
 ]);
 
-app.put("/users/:id", upload.single('avatar'), async (req, res) => {
+const imgAvatar = upload.fields([
+  {
+    name: "avatar",
+    maxCount: 1,
+  }
+]);
+
+// app.put("/users/:id", upload.single('avatar'), async (req, res) => {
+//   const User = await user.findOne({ _id: req.params.id });
+//   if (!User) {
+//     return res.status(404).json({
+//       status: "error",
+//       code: 404,
+//       message: "user not found",
+//       data: null,
+//     });
+//   }
+  
+//   const link = "/upload/" + req.file.filename;
+//   const url = API_URL + link;
+  
+//   const data = {
+//     name: req.body.name,
+//     phone: req.body.phone,
+//     date: req.body.date,
+//     avatar: url,
+//   }
+  
+//   await user.updateOne({ _id: req.params.id }, { $set: data});
+//   return res.status(200).json({
+//     status: "success",
+//     code: 200,
+//     message: "Cập nhập thành công!",
+//     data: [],
+//   });
+// });
+
+app.put("/users/:id", async (req, res) => {
+  imgAvatar(req, res, async (err) => {
   const User = await user.findOne({ _id: req.params.id });
   if (!User) {
     return res.status(404).json({
@@ -169,14 +207,19 @@ app.put("/users/:id", upload.single('avatar'), async (req, res) => {
     });
   }
   
-  const link = "/upload/" + req.file.filename;
-  const url = API_URL + link;
+  const avatar = req.files.avatar.map((file, index) => {
+      const link = "/upload/" + file.filename;
+      const url = API_URL + link;
+      return {
+        url
+      }
+    });
   
   const data = {
     name: req.body.name,
     phone: req.body.phone,
     date: req.body.date,
-    avatar: url,
+    avatar,
   }
   
   await user.updateOne({ _id: req.params.id }, { $set: data});
@@ -185,6 +228,7 @@ app.put("/users/:id", upload.single('avatar'), async (req, res) => {
     code: 200,
     message: "Cập nhập thành công!",
     data: [],
+  });
   });
 });
 
