@@ -266,6 +266,66 @@ app.post("/recipes", (req, res) => {
   });
 });
 
+app.patch("/recipes/:id", (req, res) => {
+  try {
+    imgRecipesUploadMiddleware(req, res, async (err) => {
+      const recipe = await recipes.findById(req.params.id);
+      if (!recipe) {
+        return res.status(404).json({message: "Recipes not found"});
+      }
+      
+      const ingredients = req.files.img_ingredients.map((file, index) => {
+      const link = "/upload/" + file.filename;
+      const url = API_URL + link;
+      return {
+        name: req.body[`name${index}`],
+        quality: req.body[`quality${index}`],
+        img_url: url,
+        }
+      });
+                                                      
+      const steps = req.files.img_making.map((file, index) => {
+      const link = "/upload/" + file.filename;
+      const url = API_URL + link;
+      return {
+        id: req.body[`step${index}`],
+        making: req.body[`making${index}`],
+        img_url: url,
+        }
+      });
+    
+      const img_url = req.files.img.map((file, index) => {
+      const link = "/upload/" + file.filename;
+      const url = API_URL + link;
+      return {
+        url
+      }
+      });
+    
+    const data = {
+      _id_user: req.body._id_user,
+      name_food: req.body.name_food,
+      img_url: img_url[0].url,
+      video_url: req.body.video_url,
+      time: req.body.time,
+      ingredient: ingredients,
+      step: steps,
+      topics: req.body.topics,
+    };
+
+    const newRecipe = await new recipes(data).save();
+    // await user.findByIdAndUpdate(
+    //   req.body._id_user,
+    //   { $push: { recipes: newRecipe._id }}
+    // );
+    res.status(200).send({ message: 'Cap nhat công thức thành công' });
+    });
+  }
+  catch (err) {
+    res.status(500).json({ err });
+  }
+})
+
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
 );
