@@ -274,43 +274,6 @@ app.patch("/recipes/:id", (req, res) => {
         return res.status(404).json({message: "Recipes not found"});
       }
       
-      for (const i of recipe.ingredient) {
-        await fs.unlink(
-          path.join(__dirname, `./public/upload/${i.img_url.split("upload/"[1])}`),
-          (err) => {
-            if (err) {
-              console.error(`Lỗi khi xóa ảnh: ${err}`);
-            }   else {
-              console.log(`Xóa ảnh thành công: ${path}`);
-            }
-          }
-        );
-      }
-      
-      for (const i of recipe.step) {
-        await fs.unlink(
-          path.join(__dirname, `./public/upload/${i.img_url.split("upload/"[1])}`),
-          (err) => {
-            if (err) {
-              console.error(`Lỗi khi xóa ảnh: ${err}`);
-            }   else {
-              console.log(`Xóa ảnh thành công: ${path}`);
-            }
-          }
-        );
-      }
-      
-      await fs.unlink(
-          path.join(__dirname, `./public/upload/${recipe.img_url.split("upload/"[1])}`),
-          (err) => {
-            if (err) {
-              console.error(`Lỗi khi xóa ảnh: ${err}`);
-            }   else {
-              console.log(`Xóa ảnh thành công: ${path}`);
-            }
-          }
-        );
-      
       const ingredients = req.files.img_ingredients.map((file, index) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
