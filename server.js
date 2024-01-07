@@ -274,6 +274,43 @@ app.patch("/recipes/:id", (req, res) => {
         return res.status(404).json({message: "Recipes not found"});
       }
       
+      for (const i of recipe.ingredient) {
+        await fs.unlink(
+          path.join(__dirname, `./public/upload/${i.img_url.split("upload/"[1])}`),
+          (err) => {
+            if (err) {
+              console.error(`Lỗi khi xóa ảnh: ${err}`);
+            }   else {
+              console.log(`Xóa ảnh thành công: ${path}`);
+            }
+          }
+        );
+      }
+      
+      for (const i of recipe.step) {
+        await fs.unlink(
+          path.join(__dirname, `./public/upload/${i.img_url.split("upload/"[1])}`),
+          (err) => {
+            if (err) {
+              console.error(`Lỗi khi xóa ảnh: ${err}`);
+            }   else {
+              console.log(`Xóa ảnh thành công: ${path}`);
+            }
+          }
+        );
+      }
+      
+      await fs.unlink(
+          path.join(__dirname, `./public/upload/${recipe.img_url.split("upload/"[1])}`),
+          (err) => {
+            if (err) {
+              console.error(`Lỗi khi xóa ảnh: ${err}`);
+            }   else {
+              console.log(`Xóa ảnh thành công: ${path}`);
+            }
+          }
+        );
+      
       const ingredients = req.files.img_ingredients.map((file, index) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
@@ -302,23 +339,23 @@ app.patch("/recipes/:id", (req, res) => {
       }
       });
     
-    const data = {
-      _id_user: req.body._id_user,
-      name_food: req.body.name_food,
-      img_url: img_url[0].url,
-      video_url: req.body.video_url,
-      time: req.body.time,
-      ingredient: ingredients,
-      step: steps,
-      topics: req.body.topics,
-    };
+      const data = {
+        // _id_user: req.body._id_user,
+        name_food: req.body.name_food,
+        img_url: img_url[0].url,
+        // video_url: req.body.video_url,
+        time: req.body.time,
+        ingredient: ingredients,
+        step: steps,
+        topics: req.body.topics,
+      };
 
-    const newRecipe = await new recipes(data).save();
-    // await user.findByIdAndUpdate(
-    //   req.body._id_user,
-    //   { $push: { recipes: newRecipe._id }}
-    // );
-    res.status(200).send({ message: 'Cap nhat công thức thành công' });
+      await recipes.updateOne({ _id: req.params.id}, { $set: data});
+      // await user.findByIdAndUpdate(
+      //   req.body._id_user,
+      //   { $push: { recipes: newRecipe._id }}
+      // );
+      res.status(200).send({ message: 'Cap nhat công thức thành công' });
     });
   }
   catch (err) {
