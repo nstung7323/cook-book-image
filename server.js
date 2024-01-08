@@ -315,11 +315,6 @@ app.patch("/recipes/:id", (req, res) => {
   try {
     imgRecipesUploadMiddleware(req, res, async (err) => {
       const recipe = await recipes.findById(req.params.id);
-      if (!recipe) {
-        return res.status(404).json({ message: "Recipes not found" });
-      }
-
-      deleteImgRecipes(recipe);
 
       const ingredients = req.files.img_ingredients.map((file, index) => {
         const link = "/upload/" + file.filename;
@@ -360,20 +355,27 @@ app.patch("/recipes/:id", (req, res) => {
         topics: req.body.topics,
       };
 
+      if (recipe) {
+        deleteImgRecipes(recipe);
+      } else {
+        deleteImgRecipes(data);
+        return res.status(404).json({ message: "Recipes not found" });
+      }
+
       await recipes.updateOne({ _id: req.params.id }, { $set: data });
       // await user.findByIdAndUpdate(
       //   req.body._id_user,
       //   { $push: { recipes: newRecipe._id }}
       // );
-      res.status(200).send({ message: "Cap nhat công thức thành công" });
+      res.status(200).send({ message: "Cập nhập công thức thành công" });
     });
   } catch (err) {
     res.status(500).json({ err });
   }
 });
 
-app.delete("recipes/:id", async (req, res) => {
-  const recipe = recipes.findById(req.params.id);
+app.delete("/recipes/:id", async (req, res) => {
+  const recipe = await recipes.findById(req.params.id);
   if (!recipe) {
     return res.status(404).send({ message: "Không tìm thấy công thức" });
   }
