@@ -45,8 +45,8 @@ const User = new Schema(
     phone: { required: true, type: Number },
     avatar: { required: true, type: String },
     date: { required: true, type: String },
-    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "posts"}],
-    recipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "recipes"}]
+    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "posts" }],
+    recipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "recipes" }],
   },
   {
     timestamps: true,
@@ -91,26 +91,27 @@ const Post = new Schema(
 const post = mongoose.model("posts", Post);
 
 const ingredientSchema = new Schema({
-    name: { type: String },
-    img_url: { type: String },
-    quality: { type: String },
+  name: { type: String },
+  img_url: { type: String },
+  quality: { type: String },
 });
 
 const reviewSchema = new Schema({
-    star: { type: String },
-    _id_user: { type: Schema.Types.ObjectId },
-    comment: { type: String },
+  star: { type: String },
+  _id_user: { type: Schema.Types.ObjectId },
+  comment: { type: String },
 });
 
 const stepSchema = new Schema({
-    id: { type: Number },
-    making: { type: String },
-    img_url: { type: String }
+  id: { type: Number },
+  making: { type: String },
+  img_url: { type: String },
 });
-const Recipes = new Schema({
+const Recipes = new Schema(
+  {
     _id_user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     name_food: { type: String },
     img_url: { type: String },
@@ -119,13 +120,15 @@ const Recipes = new Schema({
     ingredient: [ingredientSchema],
     step: [stepSchema],
     evaluate: [reviewSchema],
-    topics: { type: mongoose.Schema.Types.ObjectId, ref: 'topic' },
-}, {
+    topics: { type: mongoose.Schema.Types.ObjectId, ref: "topic" },
+  },
+  {
     timestamps: true,
-});
+  }
+);
 Recipes.plugin(mongooseDelete, {
-    overrideMethods: 'all',
-    deletedAt: true
+  overrideMethods: "all",
+  deletedAt: true,
 });
 
 const recipes = mongoose.model("recipes", Recipes);
@@ -149,16 +152,58 @@ const storage = multer.diskStorage({
     cb(null, newFilename);
   },
 });
-  
+
 const upload = multer({ storage });
 
 const imgRecipesUploadMiddleware = upload.fields([
   { name: "img_ingredients", maxCount: 10 },
   { name: "img_making", maxCount: 10 },
-  { name: "img", maxCount: 1 }
+  { name: "img", maxCount: 1 },
 ]);
 
-app.put("/users/:id", upload.single('_avatar_user'), async (req, res) => {
+const deleteImgRecipes = async (recipe) => {
+  for (const i of recipe.ingredient) {
+    await fs.unlink(
+      path.join(__dirname, `./public/upload/${i.img_url.split("upload/")[1]}`),
+      (err) => {
+        if (err) {
+          console.error(`Lỗi khi xóa ảnh: ${err}`);
+        } else {
+          console.log(`Xóa ảnh thành công: ${path}`);
+        }
+      }
+    );
+  }
+
+  for (const i of recipe.step) {
+    await fs.unlink(
+      path.join(__dirname, `./public/upload/${i.img_url.split("upload/")[1]}`),
+      (err) => {
+        if (err) {
+          console.error(`Lỗi khi xóa ảnh: ${err}`);
+        } else {
+          console.log(`Xóa ảnh thành công: ${path}`);
+        }
+      }
+    );
+  }
+
+  await fs.unlink(
+    path.join(
+      __dirname,
+      `./public/upload/${recipe.img_url.split("upload/")[1]}`
+    ),
+    (err) => {
+      if (err) {
+        console.error(`Lỗi khi xóa ảnh: ${err}`);
+      } else {
+        console.log(`Xóa ảnh thành công: ${path}`);
+      }
+    }
+  );
+};
+
+app.put("/users/:id", upload.single("_avatar_user"), async (req, res) => {
   const User = await user.findOne({ _id: req.params.id });
   if (!User) {
     return res.status(404).json({
@@ -168,18 +213,18 @@ app.put("/users/:id", upload.single('_avatar_user'), async (req, res) => {
       data: null,
     });
   }
-  
+
   const link = "/upload/" + req.file.filename;
   const url = API_URL + link;
-  
+
   const data = {
     name: req.body.name,
     phone: req.body.phone,
     date: req.body.date,
     avatar: url,
-  }
-  
-  await user.updateOne({ _id: req.params.id }, { $set: data});
+  };
+
+  await user.updateOne({ _id: req.params.id }, { $set: data });
   return res.status(200).json({
     status: "success",
     code: 200,
@@ -212,7 +257,7 @@ app.post("/post", (req, res) => {
     //   req.body._id_author,
     //   { $push: { posts: newPost._id }}
     // );
-    res.status(200).send({ message: 'Thêm bài viết thành công' });
+    res.status(200).send({ message: "Thêm bài viết thành công" });
   });
 });
 
@@ -225,9 +270,9 @@ app.post("/recipes", (req, res) => {
         name: req.body[`name${index}`],
         quality: req.body[`quality${index}`],
         img_url: url,
-      }
+      };
     });
-                                                      
+
     const steps = req.files.img_making.map((file, index) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
@@ -235,17 +280,17 @@ app.post("/recipes", (req, res) => {
         id: req.body[`step${index}`],
         making: req.body[`making${index}`],
         img_url: url,
-      }
+      };
     });
-    
+
     const img_url = req.files.img.map((file, index) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
       return {
-        url
-      }
+        url,
+      };
     });
-    
+
     const data = {
       _id_user: req.body._id_user,
       name_food: req.body.name_food,
@@ -262,7 +307,7 @@ app.post("/recipes", (req, res) => {
     //   req.body._id_user,
     //   { $push: { recipes: newRecipe._id }}
     // );
-    res.status(200).send({ message: 'Thêm công thức thành công' });
+    res.status(200).send({ message: "Thêm công thức thành công" });
   });
 });
 
@@ -271,74 +316,39 @@ app.patch("/recipes/:id", (req, res) => {
     imgRecipesUploadMiddleware(req, res, async (err) => {
       const recipe = await recipes.findById(req.params.id);
       if (!recipe) {
-        return res.status(404).json({message: "Recipes not found"});
+        return res.status(404).json({ message: "Recipes not found" });
       }
-      
-      for (const i of recipe.ingredient) {
-        await fs.unlink(
-          path.join(__dirname, `./public/upload/${i.img_url.split("upload/")[1]}`),
-          (err) => {
-            if (err) {
-              console.error(`Lỗi khi xóa ảnh: ${err}`);
-            }   else {
-              console.log(`Xóa ảnh thành công: ${path}`);
-            }
-          }
-        );
-      }
-      
-      for (const i of recipe.step) {
-        await fs.unlink(
-          path.join(__dirname, `./public/upload/${i.img_url.split("upload/")[1]}`),
-          (err) => {
-            if (err) {
-              console.error(`Lỗi khi xóa ảnh: ${err}`);
-            }   else {
-              console.log(`Xóa ảnh thành công: ${path}`);
-            }
-          }
-        );
-      }
-      
-      await fs.unlink(
-          path.join(__dirname, `./public/upload/${recipe.img_url.split("upload/")[1]}`),
-          (err) => {
-            if (err) {
-              console.error(`Lỗi khi xóa ảnh: ${err}`);
-            }   else {
-              console.log(`Xóa ảnh thành công: ${path}`);
-            }
-          }
-        );
-      
+
+      deleteImgRecipes(recipe);
+
       const ingredients = req.files.img_ingredients.map((file, index) => {
-      const link = "/upload/" + file.filename;
-      const url = API_URL + link;
-      return {
-        name: req.body[`name${index}`],
-        quality: req.body[`quality${index}`],
-        img_url: url,
-        }
+        const link = "/upload/" + file.filename;
+        const url = API_URL + link;
+        return {
+          name: req.body[`name${index}`],
+          quality: req.body[`quality${index}`],
+          img_url: url,
+        };
       });
-                                                      
+
       const steps = req.files.img_making.map((file, index) => {
-      const link = "/upload/" + file.filename;
-      const url = API_URL + link;
-      return {
-        id: req.body[`step${index}`],
-        making: req.body[`making${index}`],
-        img_url: url,
-        }
+        const link = "/upload/" + file.filename;
+        const url = API_URL + link;
+        return {
+          id: req.body[`step${index}`],
+          making: req.body[`making${index}`],
+          img_url: url,
+        };
       });
-    
+
       const img_url = req.files.img.map((file, index) => {
-      const link = "/upload/" + file.filename;
-      const url = API_URL + link;
-      return {
-        url
-      }
+        const link = "/upload/" + file.filename;
+        const url = API_URL + link;
+        return {
+          url,
+        };
       });
-    
+
       const data = {
         // _id_user: req.body._id_user,
         name_food: req.body.name_food,
@@ -350,18 +360,29 @@ app.patch("/recipes/:id", (req, res) => {
         topics: req.body.topics,
       };
 
-      await recipes.updateOne({ _id: req.params.id}, { $set: data});
+      await recipes.updateOne({ _id: req.params.id }, { $set: data });
       // await user.findByIdAndUpdate(
       //   req.body._id_user,
       //   { $push: { recipes: newRecipe._id }}
       // );
-      res.status(200).send({ message: 'Cap nhat công thức thành công' });
+      res.status(200).send({ message: "Cap nhat công thức thành công" });
     });
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).json({ err });
   }
-})
+});
+
+app.delete("recipes/:id", async (req, res) => {
+  const recipe = recipes.findById(req.params.id);
+  if (!recipe) {
+    return res.status(404).send({ message: "Không tìm thấy công thức" });
+  }
+
+  deleteImgRecipes(recipe);
+
+  await recipes.deleteOne({ _id: req.params.id });
+  return res.status(200).send({ message: "Xóa công thức thành công" });
+});
 
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
