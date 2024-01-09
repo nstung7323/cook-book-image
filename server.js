@@ -304,21 +304,31 @@ app.patch("/post/:id", (req, res) => {
     };
 
     if (p) {
-      if (req.files) {
+      if (req.files.length) {
         deleteImgPost(p);
         data.media = media;
       }
+      else {
+        data.media = p.media;
+      }
     } else {
-      if (req.files) {
+      if (req.files.length) {
         data.media = media;
         deleteImgPost(data);
       }
       return res.status(404).json({ message: "post not found" });
     }
 
-    await p.updateOne({ _id: req.params.id }, { $set: data });
+    await post.updateOne({ _id: req.params.id }, { $set: data });
     return res.status(200).json({ messeage: "Cập nhập bài viết thành công" });
   });
+});
+
+app.delete("/post/:id", async (req, res) => {
+  const p = await post.findById(req.params.id);
+  if (!p) {
+    return res.status(404)
+  }
 });
 
 app.post("/recipes", (req, res) => {
