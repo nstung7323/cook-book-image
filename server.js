@@ -285,7 +285,7 @@ app.post("/post", (req, res) => {
 app.patch("/post/:id", (req, res) => {
   upload.array("media", 10)(req, res, async (err) => {
     const p = await post.findById(req.params.id);
-    
+
     const media = req.files?.map((file) => {
       const link = "/upload/" + file.filename;
       const url = API_URL + link;
@@ -294,26 +294,30 @@ app.patch("/post/:id", (req, res) => {
         url,
       };
     });
-    
+
     const data = {
-      _id_author: req.body._id_author,
+      // _id_author: req.body._id_author,
       title: req.body.title,
       content: req.body.content,
       // media,
       topics: req.body.topics,
     };
-    
+
     if (p) {
-      
-    }
-    else {
       if (req.files) {
-      deleteImgPost(p);  
+        deleteImgPost(p);
+        data.media = media;
+      }
+    } else {
+      if (req.files) {
+        data.media = media;
+        deleteImgPost(data);
       }
       return res.status(404).json({ message: "post not found" });
     }
-    
+
     await p.updateOne({ _id: req.params.id }, { $set: data });
+    return res.status(200).json({ messeage: "Cập nhập bài viết thành công" });
   });
 });
 
@@ -417,8 +421,7 @@ app.patch("/recipes/:id", (req, res) => {
         if (req.files.img_ingredients) {
           deleteImgRecipeIngredient(recipe);
           data.ingredient = ingredients;
-        }
-        else {
+        } else {
           for (let i = 0; i < recipe.ingredient.length; i++) {
             if (req.body[`name${i}`]) {
               recipe.ingredient[i].name = req.body[`name${i}`];
@@ -432,8 +435,7 @@ app.patch("/recipes/:id", (req, res) => {
         if (req.files.img_making) {
           deleteImgRecipeMaking(recipe);
           data.step = steps;
-        }
-        else {
+        } else {
           for (let i = 0; i < recipe.step.length; i++) {
             if (req.body[`step${i}`]) {
               recipe.step[i].step = req.body[`step${i}`];
@@ -447,8 +449,7 @@ app.patch("/recipes/:id", (req, res) => {
         if (req.files.img) {
           deleteImgRecipe(recipe);
           data.img_url = img_url[0].url;
-        }
-        else {
+        } else {
           data.img_url = recipe.img_url;
         }
       } else {
@@ -485,7 +486,9 @@ app.delete("/recipes/:id", async (req, res) => {
     return res.status(404).send({ message: "Không tìm thấy công thức" });
   }
 
-  deleteImgRecipes(recipe);
+  deleteImgRecipeIngredient(recipe);
+  deleteImgRecipeMaking(recipe);
+  deleteImgRecipe(recipe);
 
   await recipes.deleteOne({ _id: req.params.id });
   return res.status(200).send({ message: "Xóa công thức thành công" });
