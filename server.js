@@ -93,7 +93,7 @@ const post = mongoose.model("posts", Post);
 const ingredientSchema = new Schema({
   name: { type: String },
   img_url: { type: String },
-  quality: { type: String },
+  quantity: { type: String },
 });
 
 const reviewSchema = new Schema({
@@ -117,10 +117,12 @@ const Recipes = new Schema(
     img_url: { type: String },
     video_url: { type: String },
     time: { type: String },
+    ration: { type: Number },
     ingredient: [ingredientSchema],
     step: [stepSchema],
     evaluate: [reviewSchema],
     topics: { type: mongoose.Schema.Types.ObjectId, ref: "topic" },
+    vertify: { type: Number },
   },
   {
     timestamps: true,
@@ -268,7 +270,7 @@ app.post("/recipes", (req, res) => {
       const url = API_URL + link;
       return {
         name: req.body[`name${index}`],
-        quality: req.body[`quality${index}`],
+        quantity: req.body[`quantity${index}`],
         img_url: url,
       };
     });
@@ -297,9 +299,11 @@ app.post("/recipes", (req, res) => {
       img_url: img_url[0].url,
       video_url: req.body.video_url,
       time: req.body.time,
+      ration: req.body.ration,
       ingredient: ingredients,
       step: steps,
       topics: req.body.topics,
+      vertify: 0,
     };
 
     const newRecipe = await new recipes(data).save();
@@ -321,7 +325,7 @@ app.patch("/recipes/:id", (req, res) => {
         const url = API_URL + link;
         return {
           name: req.body[`name${index}`],
-          quality: req.body[`quality${index}`],
+          quantity: req.body[`quantity${index}`],
           img_url: url,
         };
       });
