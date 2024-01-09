@@ -163,7 +163,19 @@ const imgRecipesUploadMiddleware = upload.fields([
   { name: "img", maxCount: 1 },
 ]);
 
-const deleteImgRecipes = async (recipe) => {
+const deleteImgPost = async (posts) => {
+  for (const i of posts.media) {
+    await fs.unlink(
+      path.join(__dirname, `./public/upload/${i.url.split("upload/")[1]}`),
+      (err) => {
+        if (err) {
+          console.error(`Lỗi khi xóa ảnh: ${err}`);
+        } else {
+          console.log(`Xóa ảnh thành công: ${path}`);
+        }
+      }
+    );
+  }
 };
 
 const deleteImgRecipeIngredient = async (recipe) => {
@@ -267,6 +279,41 @@ app.post("/post", (req, res) => {
     //   { $push: { posts: newPost._id }}
     // );
     res.status(200).send({ message: "Thêm bài viết thành công" });
+  });
+});
+
+app.patch("/post/:id", (req, res) => {
+  upload.array("media", 10)(req, res, async (err) => {
+    const p = await post.findById(req.params.id);
+    
+    const media = req.files?.map((file) => {
+      const link = "/upload/" + file.filename;
+      const url = API_URL + link;
+      return {
+        type: file.mimetype.startsWith("image") ? "image" : "video",
+        url,
+      };
+    });
+    
+    const data = {
+      _id_author: req.body._id_author,
+      title: req.body.title,
+      content: req.body.content,
+      // media,
+      topics: req.body.topics,
+    };
+    
+    if (p) {
+      
+    }
+    else {
+      if (req.files) {
+      deleteImgPost(p);  
+      }
+      return res.status(404).json({ message: "post not found" });
+    }
+    
+    await p.updateOne({ _id: req.params.id }, { $set: data });
   });
 });
 
