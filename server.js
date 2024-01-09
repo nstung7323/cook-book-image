@@ -373,7 +373,12 @@ app.patch("/recipes/:id", (req, res) => {
         }
         else {
           for (let i = 0; i < recipe.ingredient.length; i++) {
-            recipe.ingredient
+            if (req.body[`name${i}`]) {
+              recipe.ingredient[i].name = req.body[`name${i}`];
+            }
+            if (req.body[`quantity{i}`]) {
+              recipe.ingredient[i].quantity = req.body[`quantity{i}`];
+            }
           }
           data.ingredient = recipe.ingredient;
         }
@@ -382,6 +387,14 @@ app.patch("/recipes/:id", (req, res) => {
           data.step = steps;
         }
         else {
+          for (let i = 0; i < recipe.step.length; i++) {
+            if (req.body[`step${i}`]) {
+              recipe.step[i].step = req.body[`step${i}`];
+            }
+            if (req.body[`making{i}`]) {
+              recipe.step[i].making = req.body[`making{i}`];
+            }
+          }
           data.step = recipe.step;
         }
         if (req.files.img) {
