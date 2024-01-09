@@ -376,8 +376,8 @@ app.patch("/recipes/:id", (req, res) => {
             if (req.body[`name${i}`]) {
               recipe.ingredient[i].name = req.body[`name${i}`];
             }
-            if (req.body[`quantity{i}`]) {
-              recipe.ingredient[i].quantity = req.body[`quantity{i}`];
+            if (req.body[`quantity${i}`]) {
+              recipe.ingredient[i].quantity = req.body[`quantity${i}`];
             }
           }
           data.ingredient = recipe.ingredient;
@@ -391,8 +391,8 @@ app.patch("/recipes/:id", (req, res) => {
             if (req.body[`step${i}`]) {
               recipe.step[i].step = req.body[`step${i}`];
             }
-            if (req.body[`making{i}`]) {
-              recipe.step[i].making = req.body[`making{i}`];
+            if (req.body[`making${i}`]) {
+              recipe.step[i].making = req.body[`making${i}`];
             }
           }
           data.step = recipe.step;
