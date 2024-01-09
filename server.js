@@ -360,6 +360,7 @@ app.patch("/recipes/:id", (req, res) => {
         // img_url: img_url[0].url,
         // video_url: req.body.video_url,
         time: req.body.time,
+        ration: req.body.ration,
         // ingredient: ingredients,
         // step: steps,
         topics: req.body.topics,
@@ -371,6 +372,9 @@ app.patch("/recipes/:id", (req, res) => {
           data.ingredient = ingredients;
         }
         else {
+          for (let i = 0; i < recipe.ingredient.length; i++) {
+            recipe.ingredient
+          }
           data.ingredient = recipe.ingredient;
         }
         if (req.files.img_making) {
@@ -378,14 +382,14 @@ app.patch("/recipes/:id", (req, res) => {
           data.step = steps;
         }
         else {
-          data.ingredient = recipe.step;
+          data.step = recipe.step;
         }
         if (req.files.img) {
           deleteImgRecipe(recipe);
           data.img_url = img_url[0].url;
         }
         else {
-          data.ingredient = recipe.img_url;
+          data.img_url = recipe.img_url;
         }
       } else {
         if (req.files.img_ingredients) {
