@@ -181,7 +181,7 @@ const deleteImgRecipeIngredient = async (recipe) => {
   }
 };
 
-const deleteImgRecipeStep = async (recipe) => {
+const deleteImgRecipeMaking = async (recipe) => {
   for (const i of recipe.step) {
     await fs.unlink(
       path.join(__dirname, `./public/upload/${i.img_url.split("upload/")[1]}`),
@@ -326,7 +326,7 @@ app.patch("/recipes/:id", (req, res) => {
     imgRecipesUploadMiddleware(req, res, async (err) => {
       const recipe = await recipes.findById(req.params.id);
 
-      const ingredients = req.files.img_ingredients.map((file, index) => {
+      const ingredients = req.files.img_ingredients?.map((file, index) => {
         const link = "/upload/" + file.filename;
         const url = API_URL + link;
         return {
@@ -336,7 +336,7 @@ app.patch("/recipes/:id", (req, res) => {
         };
       });
 
-      const steps = req.files.img_making.map((file, index) => {
+      const steps = req.files.img_making?.map((file, index) => {
         const link = "/upload/" + file.filename;
         const url = API_URL + link;
         return {
@@ -346,7 +346,7 @@ app.patch("/recipes/:id", (req, res) => {
         };
       });
 
-      const img_url = req.files.img.map((file, index) => {
+      const img_url = req.files.img?.map((file, index) => {
         const link = "/upload/" + file.filename;
         const url = API_URL + link;
         return {
@@ -357,22 +357,46 @@ app.patch("/recipes/:id", (req, res) => {
       const data = {
         // _id_user: req.body._id_user,
         name_food: req.body.name_food,
-        img_url: img_url[0].url,
+        // img_url: img_url[0].url,
         // video_url: req.body.video_url,
         time: req.body.time,
-        ingredient: ingredients,
-        step: steps,
+        // ingredient: ingredients,
+        // step: steps,
         topics: req.body.topics,
       };
 
       if (recipe) {
-        if (!req.files.img_ingredients) {
+        if (req.files.img_ingredients) {
           deleteImgRecipeIngredient(recipe);
         }
-        if (!req.files.)
-        deleteImgRecipes(recipe);
+        else {
+          data.ingredient = ingredients;
+        }
+        if (req.files.img_making) {
+          deleteImgRecipeMaking(recipe);
+        }
+        else {
+          data.step = steps;
+        }
+        if (req.files.img_url) {
+          deleteImgRecipe(recipe);
+        }
+        else {
+          data.img_url = img_url[0].url;
+        }
       } else {
-        deleteImgRecipes(data);
+        if (req.files.img_ingredients) {
+          data.ingredient = ingredients;
+          deleteImgRecipeIngredient(data);
+        }
+        if (req.files.img_making) {
+          data.step = steps;
+          deleteImgRecipeMaking(data);
+        }
+        if (req.files.img_url) {
+          data.img_url = img_url[0].url;
+          deleteImgRecipe(data);
+        }
         return res.status(404).json({ message: "Recipes not found" });
       }
 
