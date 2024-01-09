@@ -122,7 +122,7 @@ const Recipes = new Schema(
     step: [stepSchema],
     evaluate: [reviewSchema],
     topics: { type: mongoose.Schema.Types.ObjectId, ref: "topic" },
-    vertify: { type: Number },
+    vertify: { type: Number, default: 0 },
   },
   {
     timestamps: true,
@@ -164,6 +164,9 @@ const imgRecipesUploadMiddleware = upload.fields([
 ]);
 
 const deleteImgRecipes = async (recipe) => {
+};
+
+const deleteImgRecipeIngredient = async (recipe) => {
   for (const i of recipe.ingredient) {
     await fs.unlink(
       path.join(__dirname, `./public/upload/${i.img_url.split("upload/")[1]}`),
@@ -176,7 +179,9 @@ const deleteImgRecipes = async (recipe) => {
       }
     );
   }
+};
 
+const deleteImgRecipeStep = async (recipe) => {
   for (const i of recipe.step) {
     await fs.unlink(
       path.join(__dirname, `./public/upload/${i.img_url.split("upload/")[1]}`),
@@ -189,7 +194,9 @@ const deleteImgRecipes = async (recipe) => {
       }
     );
   }
+};
 
+const deleteImgRecipe = async (recipe) => {
   await fs.unlink(
     path.join(
       __dirname,
@@ -303,7 +310,6 @@ app.post("/recipes", (req, res) => {
       ingredient: ingredients,
       step: steps,
       topics: req.body.topics,
-      vertify: 0,
     };
 
     const newRecipe = await new recipes(data).save();
@@ -360,6 +366,10 @@ app.patch("/recipes/:id", (req, res) => {
       };
 
       if (recipe) {
+        if (!req.files.img_ingredients) {
+          deleteImgRecipeIngredient(recipe);
+        }
+        if (!req.files.)
         deleteImgRecipes(recipe);
       } else {
         deleteImgRecipes(data);
