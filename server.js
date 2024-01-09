@@ -368,21 +368,24 @@ app.patch("/recipes/:id", (req, res) => {
       if (recipe) {
         if (req.files.img_ingredients) {
           deleteImgRecipeIngredient(recipe);
+          data.ingredient = ingredients;
         }
         else {
-          data.ingredient = ingredients;
+          data.ingredient = recipe.ingredient;
         }
         if (req.files.img_making) {
           deleteImgRecipeMaking(recipe);
-        }
-        else {
           data.step = steps;
         }
-        if (req.files.img_url) {
+        else {
+          data.ingredient = recipe.step;
+        }
+        if (req.files.img) {
           deleteImgRecipe(recipe);
+          data.img_url = img_url[0].url;
         }
         else {
-          data.img_url = img_url[0].url;
+          data.ingredient = recipe.img_url;
         }
       } else {
         if (req.files.img_ingredients) {
