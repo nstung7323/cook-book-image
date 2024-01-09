@@ -327,8 +327,13 @@ app.patch("/post/:id", (req, res) => {
 app.delete("/post/:id", async (req, res) => {
   const p = await post.findById(req.params.id);
   if (!p) {
-    return res.status(404)
+    return res.status(404).json({ messegae: "post not found" });
   }
+  
+  deleteImgPost(p);
+  
+  await post.deleteOne({ _id: req.params.id });
+  return res.status(200).json({ messeage: "Xóa bài viết thành công" });
 });
 
 app.post("/recipes", (req, res) => {
