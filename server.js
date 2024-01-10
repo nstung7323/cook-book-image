@@ -163,6 +163,19 @@ const imgRecipesUploadMiddleware = upload.fields([
   { name: "img", maxCount: 1 },
 ]);
 
+const deleteImgAvatar = async (user) => {
+  await fs.unlink(
+    path.join(__dirname, `./public/upload/${user.avatar.split("upload/")[1]}`),
+    (err) => {
+      if (err) {
+        console.error(`Lỗi khi xóa ảnh: ${err}`);
+      } else {
+        console.log(`Xóa ảnh thành công: ${path}`);
+      }
+    }
+  );
+};
+
 const deleteImgPost = async (posts) => {
   for (const i of posts.media) {
     await fs.unlink(
@@ -226,14 +239,6 @@ const deleteImgRecipe = async (recipe) => {
 
 app.put("/users/:id", upload.single("_avatar_user"), async (req, res) => {
   const User = await user.findOne({ _id: req.params.id });
-  if (!User) {
-    return res.status(404).json({
-      status: "error",
-      code: 404,
-      message: "user not found",
-      data: null,
-    });
-  }
 
   const link = "/upload/" + req.file.filename;
   const url = API_URL + link;
@@ -242,8 +247,28 @@ app.put("/users/:id", upload.single("_avatar_user"), async (req, res) => {
     name: req.body.name,
     phone: req.body.phone,
     date: req.body.date,
-    avatar: url,
+    // avatar: url,
   };
+
+  if (User) {
+    if (req.file) {
+      deleteImgAvatar(User);
+      data.avatar = url;
+    } else {
+      data.avatar = User.avatar;
+    }
+  } else {
+    if (req.file) {
+      data.avatar = url;
+      deleteImgAvatar(data);
+    }
+    return res.status(404).json({
+      status: "error",
+      code: 404,
+      message: "user not found",
+      data: null,
+    });
+  }
 
   await user.updateOne({ _id: req.params.id }, { $set: data });
   return res.status(200).json({
@@ -307,8 +332,7 @@ app.patch("/post/:id", (req, res) => {
       if (req.files.length) {
         deleteImgPost(p);
         data.media = media;
-      }
-      else {
+      } else {
         data.media = p.media;
       }
     } else {
@@ -329,9 +353,9 @@ app.delete("/post/:id", async (req, res) => {
   if (!p) {
     return res.status(404).json({ messegae: "post not found" });
   }
-  
+
   deleteImgPost(p);
-  
+
   await post.deleteOne({ _id: req.params.id });
   return res.status(200).json({ messeage: "Xóa bài viết thành công" });
 });
