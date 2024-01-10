@@ -430,6 +430,7 @@ app.patch("/recipes/:id", (req, res) => {
         // ingredient: ingredients,
         // step: steps,
         topics: req.body.topics,
+        vertify: 0,
       };
 
       if (recipe) {
