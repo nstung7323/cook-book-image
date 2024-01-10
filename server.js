@@ -240,7 +240,7 @@ const deleteImgRecipe = async (recipe) => {
 app.put("/users/:id", upload.single("_avatar_user"), async (req, res) => {
   const User = await user.findOne({ _id: req.params.id });
 
-  const link = "/upload/" + req.file.filename;
+  const link = "/upload/" + req.file?.filename;
   const url = API_URL + link;
 
   const data = {
@@ -251,14 +251,14 @@ app.put("/users/:id", upload.single("_avatar_user"), async (req, res) => {
   };
 
   if (User) {
-    if (req.file) {
+    if (req.file?.fieldname == "_avatar_user") {
       deleteImgAvatar(User);
       data.avatar = url;
     } else {
       data.avatar = User.avatar;
     }
   } else {
-    if (req.file) {
+    if (req.file?.fieldname == "_avatar_user") {
       data.avatar = url;
       deleteImgAvatar(data);
     }
