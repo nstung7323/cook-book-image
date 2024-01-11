@@ -156,7 +156,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-app.use(upload.any());
 
 const imgRecipesUploadMiddleware = upload.fields([
   { name: "img_ingredients", maxCount: 10 },
