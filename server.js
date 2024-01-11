@@ -362,7 +362,7 @@ app.delete("/post/:id", async (req, res) => {
 
 app.post("/recipes", (req, res) => {
   imgRecipesUploadMiddleware(req, res, async (err) => {
-    console.log(req.body);
+    console.log(req.body.img.filename);
     console.log(req.files);
     const ingredients = req.files.img_ingredients.map((file, index) => {
       const link = "/upload/" + file.filename;
