@@ -22,6 +22,10 @@ app.use(
   })
 );
 app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
