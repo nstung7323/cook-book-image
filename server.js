@@ -5,7 +5,6 @@ const port = 3000;
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
-const cors = require("cors");
 
 const API_URL = "https://cook-book-image.glitch.me";
 
@@ -21,11 +20,6 @@ app.use(
     limit: "1000mb",
   })
 );
-app.use(cors());
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  next();
-});
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
