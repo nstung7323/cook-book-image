@@ -82,11 +82,17 @@ const Post = new Schema(
     likes: [{ type: mongoose.Schema.Types.ObjectId }],
     comments: [CommentArr],
     topics: { type: mongoose.Schema.Types.ObjectId, ref: "Topic" },
+    vertify: { type: Number, default: 0 },
   },
   {
     timestamps: true,
   }
 );
+
+Post.plugin(mongooseDelete, {
+  overrideMethods: "all",
+  deletedAt: true,
+});
 
 const post = mongoose.model("posts", Post);
 
@@ -326,6 +332,7 @@ app.patch("/post/:id", (req, res) => {
       content: req.body.content,
       // media,
       topics: req.body.topics,
+      vertify: 0,
     };
 
     if (p) {
