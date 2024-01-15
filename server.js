@@ -414,7 +414,7 @@ app.post("/recipes", (req, res) => {
     //   req.body._id_user,
     //   { $push: { recipes: newRecipe._id }}
     // );
-    res.status(200).send({ message: "Thêm công thức thành công", data: newRecipe });
+    res.status(200).json({ message: "Thêm công thức thành công", data: newRecipe });
   });
 });
 
