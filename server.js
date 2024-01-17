@@ -311,7 +311,7 @@ app.post("/post", (req, res) => {
     //   req.body._id_author,
     //   { $push: { posts: newPost._id }}
     // );
-    res.status(200).send({ message: "Thêm bài viết thành công" });
+    res.status(200).send({ message: "Thêm bài viết thành công", data: newPost });
   });
 });
 
