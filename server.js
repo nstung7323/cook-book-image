@@ -543,6 +543,10 @@ app.delete("/recipes/:id", async (req, res) => {
   return res.status(200).send({ message: "Xóa công thức thành công" });
 });
 
+app.get("/", (req, res) => {
+  return res.send("Deploy successfully");
+})
+
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
 );
