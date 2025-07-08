@@ -7,7 +7,7 @@ const path = require("path");
 const multer = require("multer");
 const cors = require("cors");
 
-const API_URL = "https://cook-book-image.glitch.me";
+const API_URL = "https://cook-book-image.onrender.com";
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
